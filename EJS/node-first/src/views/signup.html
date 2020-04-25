@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+    <title>Node Authentication</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <%- include('./partials/head.html') %>
+    <link rel="stylesheet" href="/css/main.css">
+    
+</head>
+<body>
+    <%- include('./partials/navigation.html', {data: ''}) %>
+    <br><br><br><br><br><br><br><br><br><br>
+<div class="container">
+<div class="col-sm-6 col-sm-offset-3">
+
+    <h1><span class="fas fa-user-plus"></span> Signup</h1>
+
+    <% if (message.length > 0) { %>
+        <div class="alert alert-danger"><%= message %></div>
+    <% } %>
+
+    <!-- LOGIN FORM -->
+    <h2>
+        <form action="/Afiliadopost" method="POST">
+            <div class="form-group">
+                <label>Nombres y Apellidos</label>
+                <input type="text" class="form-control" name="email">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="form-control" name="password">
+            </div>
+
+            <button type="submit" class="btn btn-warning btn-lg">Signup</button>
+        </form>
+
+        <hr>
+
+        <p>Already have an account? <a href="/logear">Login</a></p>
+    </h2>
+
+</div>
+</div>
+</body>
+</html>

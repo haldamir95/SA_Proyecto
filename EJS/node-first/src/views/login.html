@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+    <title>Node Authentication</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <%- include('./partials/head.html') %>
+</head>
+<body>
+    <%- include('./partials/navigation.html', {data: ''}) %>
+    <br><br><br><br><br><br><br><br><br><br>
+<div class="container">
+<div class="col-sm-6 col-sm-offset-3">
+
+    <h1><span class="fa fa-sign-in"></span> SignIn</h1>
+
+    <% if (message.length > 0) { %>
+        <div class="alert alert-danger"><%= message %></div>
+    <% } %>
+
+    <!-- LOGIN FORM -->
+    <h2>
+        <form id="f" action="/Afiliado" method="GET">
+            <input type="hidden" class="form-control" id="id_jwt" name="jwt" value="QErew45tAWRwQWrrqWw">
+            <div class="form-group">
+                <label>Codigo</label>
+                <input type="text" class="form-control" id="id_codigo" name="codigo">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="form-control" id="id_password" name="password">
+            </div>
+
+            <button form="a" id="btn_logear" type="submit" class="btn btn-warning btn-lg" onclick="validacion()">Login</button>
+        </form>
+    </h2>
+    <hr>
+
+</div>
+</div>
+
+
+<script>
+    function logear(){
+        var jwt = document.getElementById("id_jwt").value;
+        var codigo = document.getElementById("id_codigo").value;
+        var password = document.getElementById("id_password").value;
+        alert(jwt)
+        location.href='/Afiliado';
+    }
+    function validacion(){
+        try {
+            var btnlog=document.getElementById("btn_logear");
+            btnlog.disabled=true;
+            var jwt = document.getElementById("id_jwt").value;
+            var codigo = document.getElementById("id_codigo").value;
+            var password = document.getElementById("id_password").value;
+            location.href='/Afiliado?jwt='+jwt+'&codigo='+codigo+'&password='+password;
+        } catch (err) {
+            alert(err)
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+version: "3.4"
+
+services:  
+
+    mongo_img:
+        build: ./MONGO/
+        command: mongod --port 27018
+        environment:
+            MONGO_INITDB_DATABASE: "db_subasta"
+        ports:
+            - ${PORT_MONGO}:27018
+        container_name: mongo_cnt
+        
