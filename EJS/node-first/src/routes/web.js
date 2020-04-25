@@ -1,9 +1,27 @@
+/* ---------------------------------      TABLA DE ROUTEO      -------------------------------------------------
+
+                    URL_OFICINA                         URL_ASEGURADORA                     URL_TOKENS
+
+LOCAL               http://127.0.0.1:4000               http://127.0.0.1:4000
+
+GP2                                                     http://34.214.230.10:4000           http://3.94.79.29:8000
+
+FISH GP4            http://35.232.205.249               http://34.70.210.93
+
+RICARDO
+
+
+
+*/
+
+
+
 const express = require('express');
 const request = require('request');
 const router = express.Router();
 const fetchQuery = require('../request-manager');
-const URL_OFICINA = 'http://127.0.0.1:4000'
-const URL_ASEGURADORA = 'http://127.0.0.1:4000'      //        'http://34.214.230.10:4000'
+const URL_OFICINA = 'http://127.0.0.1:4000'                 
+const URL_ASEGURADORA = 'http://127.0.0.1:4000'         
 const URL_TOKEN = 'http://3.94.79.29:8000'
 const app = express();
 
@@ -11,26 +29,29 @@ const app = express();
 
 //------------------------------------------ INICIAL
 router.get('/', async (req,res) => {
-    //Obteniendo Token
-    var credenciales = {
-        client_id: 'giovannilopez', 
-        client_secret: 'miacceso123'
-    }
-    var token = await fetchQuery(URL_TOKEN+'/getToken/','POST', credenciales).then()
-    .catch(function(err){
-        console.log(err.status, err.statusText)
-    });
+     //Obteniendo Token
+     var credenciales = {
+         client_id: 'giovannilopez', 
+         client_secret: 'miacceso123'
+     }
+     var token = await fetchQuery(URL_TOKEN+'/getToken/','POST', credenciales).then()
+     .catch(function(err){
+         console.log(err.status, err.statusText)
+     });
 
-    //Obteniendo Todos los vehiculos
-    fetchQuery(URL_ASEGURADORA+'/Vehiculo?jwt='+token.token, 'GET').then(res_be => {
-        if (res_be!=null) {
-            res.render('./tech-blog/subasta.html',{ title: 'Subasta Online', carros:res_be, usr:req.session.sessUsr});
-        } else {
-            console.log('res_back_end not soccess')
-        }
-    }).catch(function (err) {
-        console.log(err.status, err.statusText)
-    }); 
+     //Obteniendo Todos los vehiculos
+     fetchQuery(URL_ASEGURADORA+'/Vehiculo?jwt='+token.token, 'GET').then(res_be => {
+         if (res_be!=null) {
+             console.log(res_be)
+             res.render('./tech-blog/subasta.html',{ title: 'Subasta Online', carros:res_be, usr:req.session.sessUsr});
+         } else {
+             console.log('res_back_end not soccess')
+         }
+     }).catch(function (err) {
+         console.log(err.status, err.statusText)
+     }); //cambio
+
+    //res.render('login.html',{ title: 'Subasta Online', message: ''});
 });
 //-----------------------------------------------------------------------------------------------------------------------
 
@@ -50,7 +71,7 @@ router.get('/logear', (req,res) => {
 
 //-------------------------------------------- PERFIL
 router.get('/perfil', (req,res) => {
-    res.render('perfil.html',{ title: 'Subasta Online', message: ''});
+    res.render('perfil.html',{ title: 'Subasta Online', nombre: req.session.sessAuth.local.nombre, user: req.session.sessAuth});
 });
 //--------------------------------------------------------------------------
 
@@ -83,6 +104,7 @@ router.get('/logout', async (req,res) => {
     //Terminando Sesion
     req.session.sessUsr='';
     req.session.sessCod='';
+    req.session.sessAuth={};
 
 
     //Obteniendo Todos los vehiculos
@@ -136,24 +158,31 @@ router.post('/Afiliadopost', async (req,res) => {
         if(usuario.vigente){
             req.session.sessUsr = usuario.nombre
             req.session.sessCod = usuario.codigo
+            req.session.sessAuth = {
+                local: {
+                    codigo: usuario.codigo,
+                    nombre: usuario.nombre,
+                    vigente: usuario.vigente
+                },
+                facebook: {
+                    id: usuario.codigo,
+                    name: usuario.nombre
+                },
+                twitter: {
+                    id: usuario.codigo,
+                    display_name: usuario.nombre,
+                    username: '@'+usuario.nombre
+                },
+                google: {
+                    id: usuario.codigo,
+                    email: usuario.nombre+'@gmail.com',
+                    name: usuario.nombre
+                }
+            }
             
-            
-            //Obteniendo Token 2
-            var token2 = await fetchQuery(URL_TOKEN+'/getToken/','POST', credenciales).then()
-            .catch(function(err){
-                console.log(err.status, err.statusText)
-            });
-        
-
-            //Obteniendo Vehiculos
-            var vehiculos = await fetchQuery(URL_ASEGURADORA+'/Vehiculo?jwt='+token2.token, 'GET').then()
-            .catch(function (err) {
-                console.log(err.status, err.statusText)
-                res.render('login.html',{ title: 'Subasta Online', message: err.status + ' ' + err.statusText});
-            });
 
             //Enviando a subasta
-            res.render('./tech-blog/subasta.html',{ title: 'Subasta Online', carros:vehiculos, usr:req.session.sessUsr});
+            res.render('perfil.html',{ title: 'Subasta Online', nombre: req.session.sessAuth.local.nombre, user: req.session.sessAuth});
         }else{
             res.render('login.html',{ title: 'Subasta Online', message: 'Su usuario NO esta vigente'});
         }
@@ -188,7 +217,7 @@ router.get('/Afiliado', async (req,res) => {
         console.log(err.status, err.statusText)
         res.render('login.html',{ title: 'Subasta Online', message: err.status + ' ' + err.statusText});
     });
-
+    console.log('USUARIO ',usuario)
 
     //Obteniendo Token 2
     var token2 = await fetchQuery(URL_TOKEN+'/getToken/','POST', credenciales).then()
@@ -207,18 +236,35 @@ router.get('/Afiliado', async (req,res) => {
 
     //Validacion de respuestas
     if(usuario!=null){
-        if (usuario.status=='OK') {
-            if(usuario.vigente){
-                req.session.sessUsr = usuario.nombre
-                req.session.sessCod = usuario.codigo
-                console.log('Afiliado -> ',usuario)
-                res.render('./tech-blog/subasta.html',{ title: 'Subasta Online', carros:vehiculos, usr:req.session.sessUsr});
-            }else{
-            res.render('login.html',{ title: 'Subasta Online', message: 'Su usuario NO esta vigente'});
+        if(usuario.vigente){
+            req.session.sessUsr = usuario.nombre
+            req.session.sessCod = usuario.codigo
+            req.session.sessAuth = {
+                local: {
+                    codigo: usuario.codigo,
+                    nombre: usuario.nombre,
+                    vigente: usuario.vigente
+                },
+                facebook: {
+                    id: usuario.codigo,
+                    name: usuario.nombre
+                },
+                twitter: {
+                    id: usuario.codigo,
+                    display_name: usuario.nombre,
+                    username: '@'+usuario.nombre
+                },
+                google: {
+                    id: usuario.codigo,
+                    email: usuario.nombre+'@gmail.com',
+                    name: usuario.nombre
+                }
             }
-        } else {
-            console.log('res not success')
-        } 
+            console.log('Afiliado -> ',usuario,'\n\nSESSAUTH -> ',req.session.sessAuth)
+            res.render('./tech-blog/subasta.html',{ title: 'Subasta Online', carros:vehiculos, usr:req.session.sessUsr});
+        }else{
+        res.render('login.html',{ title: 'Subasta Online', message: 'Su usuario NO esta vigente'});
+        }
     }
 });
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------

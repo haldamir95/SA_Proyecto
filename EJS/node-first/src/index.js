@@ -19,6 +19,7 @@ app.use((req, res, next) => {
      req.session.initialised = true;
      req.session.sessUsr = '';
      req.session.sessCod = '';
+     req.session.sessAuth = {};
   }
   next();
 });
