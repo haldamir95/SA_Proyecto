@@ -71,7 +71,7 @@ router.get('/logear', (req,res) => {
 
 //-------------------------------------------- PERFIL
 router.get('/perfil', (req,res) => {
-    res.render('perfil.html',{ title: 'Subasta Online', nombre: req.session.sessAuth.local.nombre, user: req.session.sessAuth});
+    res.render('perfil.html',{ title: 'Subasta Online', nombre: req.session.sessAuth.local.nombre, user: req.session.sessAuth, message: ''});
 });
 //--------------------------------------------------------------------------
 
@@ -182,7 +182,76 @@ router.post('/Afiliadopost', async (req,res) => {
             
 
             //Enviando a subasta
-            res.render('perfil.html',{ title: 'Subasta Online', nombre: req.session.sessAuth.local.nombre, user: req.session.sessAuth});
+            res.render('perfil.html',{ title: 'Subasta Online', nombre: req.session.sessAuth.local.nombre, user: req.session.sessAuth, message: ''});
+        }else{
+            res.render('login.html',{ title: 'Subasta Online', message: 'Su usuario NO esta vigente'});
+        }
+    }
+});
+
+
+
+
+//---------------------------------------------------------- MODIFICAR CUENTA
+router.post('/Afiliadoput', async (req,res) => {
+    //Obteniendo Token
+    var credenciales = {
+        client_id: 'giovannilopez', 
+        client_secret: 'miacceso123'
+    }
+    var token = await fetchQuery(URL_TOKEN+'/getToken/','POST', credenciales).then()
+    .catch(function(err){
+        console.log(err.status, err.statusText)
+    });
+
+
+    //Generando Body para hacer put
+    var data = {
+        jwt: token.token,
+        codigo: req.body.codigo,
+        nombre: req.body.nombre,
+        password: req.body.password
+    }
+
+
+    //Modificando Usuario
+    var usuario = await fetchQuery(URL_OFICINA+'/Afiliado', 'PUT', data).then()
+    .catch(function (err) {
+        console.log(err.status, err.statusText)
+        res.render('perfil.html',{ title: 'Subasta Online', nombre: req.session.sessAuth.local.nombre, user: req.session.sessAuth, message: err.status + ' ' + err.statusText});
+    });
+
+    console.log(usuario)
+    //Validacion de respuestas
+    if(usuario!=null){
+        if(usuario.vigente==true){
+            req.session.sessUsr = usuario.nombre
+            req.session.sessCod = usuario.codigo
+            req.session.sessAuth = {
+                local: {
+                    codigo: usuario.codigo,
+                    nombre: usuario.nombre,
+                    vigente: usuario.vigente
+                },
+                facebook: {
+                    id: usuario.codigo,
+                    name: usuario.nombre
+                },
+                twitter: {
+                    id: usuario.codigo,
+                    display_name: usuario.nombre,
+                    username: '@'+usuario.nombre
+                },
+                google: {
+                    id: usuario.codigo,
+                    email: usuario.nombre+'@gmail.com',
+                    name: usuario.nombre
+                }
+            }
+            
+
+            //Enviando a subasta
+            res.render('perfil.html',{ title: 'Subasta Online', nombre: req.session.sessAuth.local.nombre, user: req.session.sessAuth, message:"Modificacion Exitosa"});
         }else{
             res.render('login.html',{ title: 'Subasta Online', message: 'Su usuario NO esta vigente'});
         }

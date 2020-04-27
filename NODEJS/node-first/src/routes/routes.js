@@ -220,7 +220,25 @@ router.post('/Afiliado', async (req,res) => {
 
 
 
+router.put('/Afiliado', async (req,res) => {
+    
+    var consulta = { codigo: Number(req.body.codigo)};
+    
+    var set = { $set: {nombre: req.body.nombre, password: req.body.password } };
 
+    var actualizacion = await mongodb.db.collection('usuario').updateOne(consulta, set);
+
+    var Afiliado = await mongodb.db.collection('usuario').find(consulta).toArray();
+
+    if(Afiliado != null){
+        console.log(Afiliado[0])
+        res.status(200).send(Afiliado[0])
+
+    }else{
+        res.send([])
+        console.log(err)
+    }  
+});
 
 
 

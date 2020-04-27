@@ -15,7 +15,9 @@
 
     <div class="page-header text-center">
         <h1><span class="fa fa-anchor"></span> Profile Page</h1>
-        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+        <% if (message.length > 0) { %>
+            <div class="alert alert-danger"><%= message %></div>
+        <% } %>
     </div>
 
     <div class="row">
@@ -24,21 +26,25 @@
         
         <div class="col-sm-6">
             <div class="well">
-                
                 <h1><span class="fa fa-user"></span> Local</h1>
-
-                <% if (user.local.codigo) { %>
-                    <h2><p>
-                        <strong>codigo</strong>: <%= user.local.codigo %><br>
-                        <strong>nombre</strong>: <%= user.local.nombre %><br>
-                        <strong>vigente</strong>: <%= user.local.vigente %>
-                    </p></h2>
-                    
-                    <a href="/unlink/local" class="btn btn-warning">Unlink</a>
-                <% } else { %>
-                    <a href="/connect/local" class="btn btn-warning">Connect Local</a>
-                <% } %>
-
+                <form action="/Afiliadoput" method="POST">
+                    <% if (user.local.codigo) { %>
+                        <h2><p>
+                            <div class="form-group row">
+                                &emsp;<strong>codigo</strong>: &emsp;<input class="form-control" name="codigo" style="width: 300px; font-size: large;" type="text" value="<%= user.local.codigo %>" readonly>
+                            </div>
+                            <div class="form-group row">
+                                &emsp;<strong>nombre</strong>: &emsp; <input class="form-control" name="nombre" style="width: 300px; font-size: large;" type="text" value="<%= user.local.nombre %>" > <br>
+                            </div>
+                            <div class="form-group row">
+                                &emsp;<strong>vigente</strong>: &emsp;<input class="form-control" name="vigente" style="width: 300px; font-size: large;" type="text" value="<%= user.local.vigente %>" readonly><br>
+                            </div><div class="form-group row">
+                                &emsp;<strong>password</strong>: &emsp;<input class="form-control" name="password" style="width: 300px; font-size: large;" type="password" value="">
+                            </div>
+                        </p></h2>
+                        <button type="submit" class="btn btn-warning" style="font-size: large;">Modificar</button>
+                    <% }%>
+                </form>
             </div>
         </div>
 

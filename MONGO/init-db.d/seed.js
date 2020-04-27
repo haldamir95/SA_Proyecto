@@ -127,6 +127,7 @@ db.usuario.insertMany([
     id: 1,
     codigo: 666,
     password: '123',
-    nombre: 'Alan Guzman'
+    nombre: 'Alan Guzman',
+    vigente: true
   }
 ])
