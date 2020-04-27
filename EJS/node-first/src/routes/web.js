@@ -237,7 +237,7 @@ router.post('/Afiliadoput', async (req,res) => {
                     id: usuario.codigo,
                     name: usuario.nombre
                 },
-                twitter: {
+                twitter: {   
                     id: usuario.codigo,
                     display_name: usuario.nombre,
                     username: '@'+usuario.nombre
