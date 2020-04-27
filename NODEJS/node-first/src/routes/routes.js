@@ -245,6 +245,32 @@ router.put('/Afiliado', async (req,res) => {
 
 
 
+router.get('/Foto', async (req,res) => {
+    try {
+        var vehiculo = await mongodb.db.collection('vehiculo').find().toArray()
+        
+        var vehiculos = new Array();
+        vehiculo.forEach(carro => {
+            vehiculos.push({id: carro.id, url: carro.imagen})
+            
+        });
+        console.log(vehiculos)
+        res.status(200).send(vehiculos)
+    } catch (error) {
+        console.log(error)
+        res.send([])
+    }  
+});
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,0 +1,1 @@
+1. por que necesito mandar un ID para obtener las fotos si necesito obtener TODAS al iniciar

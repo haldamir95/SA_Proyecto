@@ -22,17 +22,20 @@
 
     <!-- LOGIN FORM -->
     <h2>
-        <form action="/Afiliadopost" method="POST">
+        <form id ="signup_frm" action="/Afiliadopost" method="POST">
             <div class="form-group">
                 <label>Nombres y Apellidos</label>
                 <input type="text" class="form-control" name="email">
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" class="form-control" name="password">
+                <input type="password" class="form-control" id ="password" name="password">
             </div>
-
-            <button type="submit" class="btn btn-warning btn-lg">Signup</button>
+            <div class="form-group">
+                <label>Repeat Password</label>
+                <input type="password" class="form-control" id="password2" name="password2">
+            </div>
+            <button form="no-form" type="submit" class="btn btn-warning btn-lg" onclick="validar()">Signup</button>
         </form>
 
         <hr>
@@ -43,4 +46,19 @@
 </div>
 </div>
 </body>
+<script>
+    function validar(){
+        try {
+            var passwd = document.getElementById("password").value;
+            var passwd2 = document.getElementById("password2").value;
+            if(passwd==passwd2){
+                document.forms["signup_frm"].submit();
+            }else{
+                alert("Los passwords deben ser iguales")
+            }
+        } catch (error) {
+            alert(error)
+        }
+    }
+</script>
 </html>

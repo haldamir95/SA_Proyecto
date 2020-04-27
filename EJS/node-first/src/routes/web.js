@@ -39,6 +39,14 @@ router.get('/', async (req,res) => {
          console.log(err.status, err.statusText)
      });
 
+
+     //Obteniendo Fotos de Vehiculos
+     var fotos = await fetchQuery(URL_ASEGURADORA+'/Foto','GET').then()
+     .catch(function(err){
+         console.log(err.status, err.statusText)
+     });
+     
+
      //Obteniendo Todos los vehiculos
      fetchQuery(URL_ASEGURADORA+'/Vehiculo?jwt='+token.token, 'GET').then(res_be => {
          if (res_be!=null) {
