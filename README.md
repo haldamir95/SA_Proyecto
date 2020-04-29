@@ -61,8 +61,8 @@ Crear cuenta en Dockerhub
 
 entrar a los settings del proyecto de CircleCI y seleccionar Environment Variables
 Agregar variables
-name: DOCKER_LOGIN      value: haldamir95
-name: DOCKER_PWD        value: docker11235813
+name: DOCKER_LOGIN      value: usuario de dockerhub
+name: DOCKER_PWD        value: password de dockerhub
 #FIN DE LA INSTALACION CONTINUA------------------------------------------------------------
 
 
