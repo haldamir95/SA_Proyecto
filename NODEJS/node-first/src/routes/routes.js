@@ -10,14 +10,15 @@ const init = async () => {
 init()
 
 router.get('/', (req,res) => {
-    mongodb.db.collection('vehiculo').find().toArray((err, vehiculo) =>{
-        if(vehiculo != null){
-            res.send({success: true, arrVehiculos: vehiculo})
-        }else{
-            res.send([])
-            console.log(err)
-        }        
-    })
+    // mongodb.db.collection('vehiculo').find().toArray((err, vehiculo) =>{
+    //     if(vehiculo != null){
+    //         res.send({success: true, arrVehiculos: vehiculo})
+    //     }else{
+    //         res.send([])
+    //         console.log(err)
+    //     }        
+    // })
+    console.log("raiz /")
 });
 
 router.post('/prueba', async (req,res) => {
@@ -263,8 +264,34 @@ router.get('/Foto', async (req,res) => {
 });
 
 
+const URL_TOKEN = "http://localhost:4000"
+
+router.get('/fish', async (req,res) => {
+    const credenciales2 = {
+        client_id: 'giovannilopez', 
+        client_secret: 'miacceso123',
+        grant_type: 'client_credentials',
+        audience: 12
+    }
+    var token = await fetchQuery(URL_TOKEN+'/oauth/token/','POST', credenciales2).then()
+    .catch(function(err){
+        console.log(err.status, err.statusText)
+    });
+    console.log(token)
+});
 
 
+
+
+
+router.post('/oauth/token/', async (req,res) => {
+    try {
+        console.log("ME LLEGO: ", req.body)
+    } catch (error) {
+        console.log(error)
+        res.send([])
+    }  
+});
 
 
 
