@@ -1,7 +1,7 @@
 const express = require('express');
 const app= express();
 const path = require ('path');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 const session = require('express-session');
 
 
@@ -19,6 +19,7 @@ app.use((req, res, next) => {
      req.session.initialised = true;
      req.session.sessUsr = '';
      req.session.sessCod = '';
+     req.session.sessAuth = {};
   }
   next();
 });

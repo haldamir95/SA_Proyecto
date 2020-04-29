@@ -4,53 +4,62 @@
     <title>Node Authentication</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
-    <style>
-        body         { padding-top:80px; word-wrap:break-word; }
-    </style>
+    <link rel="stylesheet" href="/css/main.css">
+    <%- include('./partials/head.html') %>
 </head>
 <body>
+    <%- include('./partials/navigation.html', {data: nombre}) %>
+    <br><br><br>
 <div class="container">
+
 
     <div class="page-header text-center">
         <h1><span class="fa fa-anchor"></span> Profile Page</h1>
-        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+        <% if (message.length > 0) { %>
+            <div class="alert alert-danger"><%= message %></div>
+        <% } %>
     </div>
 
     <div class="row">
 
         <!-- LOCAL INFORMATION -->
+        
         <div class="col-sm-6">
             <div class="well">
-                <h3><span class="fa fa-user"></span> Local</h3>
-
-                <% if (user.local.email) { %>
-                    <p>
-                        <strong>id</strong>: <%= user._id %><br>
-                        <strong>email</strong>: <%= user.local.email %><br>
-                        <strong>password</strong>: <%= user.local.password %>
-                    </p>
-                    
-                    <a href="/unlink/local" class="btn btn-default">Unlink</a>
-                <% } else { %>
-                    <a href="/connect/local" class="btn btn-default">Connect Local</a>
-                <% } %>
-
+                <h1><span class="fa fa-user"></span> Local</h1>
+                <form action="/Afiliadoput" method="POST">
+                    <% if (user.local.codigo) { %>
+                        <h2><p>
+                            <div class="form-group row">
+                                &emsp;<strong>codigo</strong>: &emsp;<input class="form-control" name="codigo" style="width: 300px; font-size: large;" type="text" value="<%= user.local.codigo %>" readonly>
+                            </div>
+                            <div class="form-group row">
+                                &emsp;<strong>nombre</strong>: &emsp; <input class="form-control" name="nombre" style="width: 300px; font-size: large;" type="text" value="<%= user.local.nombre %>" > <br>
+                            </div>
+                            <div class="form-group row">
+                                &emsp;<strong>vigente</strong>: &emsp;<input class="form-control" name="vigente" style="width: 300px; font-size: large;" type="text" value="<%= user.local.vigente %>" readonly><br>
+                            </div><div class="form-group row">
+                                &emsp;<strong>password</strong>: &emsp;<input class="form-control" name="password" style="width: 300px; font-size: large;" type="password" value="">
+                            </div>
+                        </p></h2>
+                        <button type="submit" class="btn btn-warning" style="font-size: large;">Modificar</button>
+                    <% }%>
+                </form>
             </div>
         </div>
+
 
         <!-- FACEBOOK INFORMATION -->
         <div class="col-sm-6">
             <div class="well">
-                <h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
+                <h1 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h1>
 
                 <!-- check if the user has this token (is the user authenticated with this social account) -->
-                <% if (user.facebook.token) { %>
-                    <p>
+                <% if (user.facebook.id) { %>
+                    <h3><p>
                         <strong>id</strong>: <%= user.facebook.id %><br>
-                        <strong>token</strong>: <%= user.facebook.token %><br>
-                        <strong>email</strong>: <%= user.facebook.email %><br>
                         <strong>name</strong>: <%= user.facebook.name %><br>
-                    </p>
+                    </p></h3>
                     <a href="/unlink/facebook" class="btn btn-primary">Unlink</a>
                 <% } else { %>
                     <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
@@ -59,20 +68,21 @@
             </div>
         </div>
     </div>
+
+
     <div class="row">
 
         <!-- TWITTER INFORMATION -->
         <div class="col-sm-6">
             <div class="well">
-                <h3 class="text-info"><span class="fa fa-twitter"></span> Twitter</h3>
+                <h1 class="text-info"><span class="fa fa-twitter"></span> Twitter</h1>
 
-                <% if (user.twitter.token) { %>
-                    <p>
+                <% if (user.twitter.id) { %>
+                    <h3><p>
                         <strong>id</strong>: <%= user.twitter.id %><br>
-                        <strong>token</strong>: <%= user.twitter.token %><br>
                         <strong>display name</strong>: <%= user.twitter.displayName %><br>
                         <strong>username</strong>: <%= user.twitter.username %>
-                    </p>
+                    </p></h3>
                     <a href="/unlink/twitter" class="btn btn-info">Unlink</a>
                 <% } else { %>
                     <a href="/connect/twitter" class="btn btn-info">Connect Twitter</a>
@@ -84,15 +94,14 @@
         <!-- GOOGLE INFORMATION -->
         <div class="col-sm-6">
             <div class="well">
-                <h3 class="text-danger"><span class="fa fa-google-plus"></span> Google+</h3>
+                <h1 class="text-danger"><span class="fa fa-google-plus"></span> Google+</h1>
 
-                <% if (user.google.token) { %>
-                    <p>
+                <% if (user.google.id) { %>
+                    <h3><p>
                         <strong>id</strong>: <%= user.google.id %><br>
-                        <strong>token</strong>: <%= user.google.token %><br>
                         <strong>email</strong>: <%= user.google.email %><br>
                         <strong>name</strong>: <%= user.google.name %>
-                    </p>
+                    </p></h3>
                     <a href="/unlink/google" class="btn btn-danger">Unlink</a>
                 <% } else { %>
                     <a href="/connect/google" class="btn btn-danger">Connect Google</a>
@@ -100,11 +109,6 @@
 
             </div>
         </div>
-    </div>
-
-    <div class="text-center">
-        <p>A demo by <a href="http://scotch.io">Scotch</a>.</p>
-        <p>Visit the <a href="http://scotch.io/tutorials/javascript/easy-node-authentication-setup-and-local">tutorial</a>.</p>
     </div>
 
 </div>

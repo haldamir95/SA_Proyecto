@@ -70,12 +70,18 @@
                                                     <% if(carr.estado==3){ %><!-- **************************************** SI ES SUBASTABLE -->
 
 
-                                                        <!-- IMAGEN -->
-                                                        <div class="post-media">
-                                                            <a href="#" title="">
-                                                                <img src="<%- carr.imagen %>" alt="" class="img-fluid animated bounceIn">
-                                                            </a>
-                                                        </div>
+                                                         <!-- IMAGEN -->
+                                                        <% album.forEach(function(foto) { %>
+                                                            <% if(foto.id_vehiculo==carr.id){ %>
+                                                                <div class="post-media">
+                                                                    <a href="#" title="">
+                                                                        <img src="<%- foto.url_ %>" alt="" class="img-fluid animated bounceIn">
+                                                                    </a>
+                                                                </div>
+                                                            <% } %>
+                                                        <% }) %>
+                                                         
+                                                        
         
 
                                                         <!-- DATA -->
@@ -96,7 +102,7 @@
 
 
                                                             <!-- PRECIO -->
-                                                            <h4><p> VALOR ACTUAL: Q. <%- carr.valor_adjudicacion %>
+                                                            <h4><p> VALOR ACTUAL: Q. <%- carr.precio_base %>
                                                             </p></h4>
 
 
@@ -142,11 +148,15 @@
     
 
                                                         <!-- IMAGEN -->
-                                                        <div class="post-media">
-                                                            <a href="#" title="">
-                                                                <img src="<%- carr.imagen %>" alt="" class="img-fluid animated bounceIn">
-                                                            </a>
-                                                        </div>
+                                                        <% album.forEach(function(foto) { %>
+                                                            <% if(foto.id_vehiculo==carr.id){ %>
+                                                                <div class="post-media">
+                                                                    <a href="#" title="">
+                                                                        <img src="<%- foto.url_ %>" alt="" class="img-fluid animated bounceIn">
+                                                                    </a>
+                                                                </div>
+                                                            <% } %>
+                                                        <% }) %>
         
 
                                                         <!-- DATA -->
@@ -187,7 +197,7 @@
 
 
                                                             <!-- PRECIO Y AFILIADO-->
-                                                            <h4><p> VALOR ACTUAL: Q. <%- carr.valor_adjudicacion %>
+                                                            <h4><p> VALOR ACTUAL: Q. <%- carr.precio_base %>
                                                             </p></h4>
                                                             <h5><p> AFILIADO ADJUDICADO: <%- carr.afiliado_adjudicado %>
                                                             </p></h5>
@@ -242,11 +252,11 @@
     </div><!-- end wrapper -->
 
     <!-- Core JavaScript
-    ================================================== -->
+    ================================================== 
     <script src="js/jquery.min.js"></script>
     <script src="js/tether.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <script src="js/custom.js"></script>
+    <script src="js/custom.js"></script>-->
     <script>
         function Mensaje(){
             alert('Autenticate para poder hacer pujas')

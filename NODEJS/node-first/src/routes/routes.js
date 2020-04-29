@@ -10,14 +10,15 @@ const init = async () => {
 init()
 
 router.get('/', (req,res) => {
-    mongodb.db.collection('vehiculo').find().toArray((err, vehiculo) =>{
-        if(vehiculo != null){
-            res.send({success: true, arrVehiculos: vehiculo})
-        }else{
-            res.send([])
-            console.log(err)
-        }        
-    })
+    // mongodb.db.collection('vehiculo').find().toArray((err, vehiculo) =>{
+    //     if(vehiculo != null){
+    //         res.send({success: true, arrVehiculos: vehiculo})
+    //     }else{
+    //         res.send([])
+    //         console.log(err)
+    //     }        
+    // })
+    console.log("raiz /")
 });
 
 router.post('/prueba', async (req,res) => {
@@ -220,7 +221,77 @@ router.post('/Afiliado', async (req,res) => {
 
 
 
+router.put('/Afiliado', async (req,res) => {
+    
+    var consulta = { codigo: Number(req.body.codigo)};
+    
+    var set = { $set: {nombre: req.body.nombre, password: req.body.password } };
 
+    var actualizacion = await mongodb.db.collection('usuario').updateOne(consulta, set);
+
+    var Afiliado = await mongodb.db.collection('usuario').find(consulta).toArray();
+
+    if(Afiliado != null){
+        console.log(Afiliado[0])
+        res.status(200).send(Afiliado[0])
+
+    }else{
+        res.send([])
+        console.log(err)
+    }  
+});
+
+
+
+
+
+
+router.get('/Foto', async (req,res) => {
+    try {
+        var vehiculo = await mongodb.db.collection('vehiculo').find().toArray()
+        
+        var vehiculos = new Array();
+        vehiculo.forEach(carro => {
+            vehiculos.push({id: carro.id, url: carro.imagen})
+            
+        });
+        console.log(vehiculos)
+        res.status(200).send(vehiculos)
+    } catch (error) {
+        console.log(error)
+        res.send([])
+    }  
+});
+
+
+const URL_TOKEN = "http://localhost:4000"
+
+router.get('/fish', async (req,res) => {
+    const credenciales2 = {
+        client_id: 'giovannilopez', 
+        client_secret: 'miacceso123',
+        grant_type: 'client_credentials',
+        audience: 12
+    }
+    var token = await fetchQuery(URL_TOKEN+'/oauth/token/','POST', credenciales2).then()
+    .catch(function(err){
+        console.log(err.status, err.statusText)
+    });
+    console.log(token)
+});
+
+
+
+
+
+router.post('/oauth/token/', async (req,res) => {
+    try {
+        console.log("ME LLEGO: ", req.body)
+    } catch (error) {
+        console.log(error)
+        res.send([])
+    }  
+});
 
 
 
