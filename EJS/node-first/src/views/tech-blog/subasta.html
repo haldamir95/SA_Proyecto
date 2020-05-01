@@ -73,9 +73,10 @@
                                                          <!-- IMAGEN -->
                                                         <% album.forEach(function(foto) { %>
                                                             <% if(foto.id_vehiculo==carr.id){ %>
+                                                                
                                                                 <div class="post-media">
                                                                     <a href="#" title="">
-                                                                        <img src="<%- foto.url_ %>" alt="" class="img-fluid animated bounceIn">
+                                                                        <img src="<%- foto.url %>" alt="" class="img-fluid animated bounceIn">
                                                                     </a>
                                                                 </div>
                                                             <% } %>
@@ -104,6 +105,10 @@
                                                             <!-- PRECIO -->
                                                             <h4><p> VALOR ACTUAL: Q. <%- carr.precio_base %>
                                                             </p></h4>
+                                                            <h4><p> MINIMO REQUERIDO: Q. <%- carr.minimo_requerido %>
+                                                            </p></h4>
+                                                            <h5><p> AFILIADO ADJUDICADO: <%- carr.afiliado_adjudicado %>
+                                                            </p></h5>
 
 
                                                             <!-- INFORMACION EXTRA -->
@@ -152,7 +157,7 @@
                                                             <% if(foto.id_vehiculo==carr.id){ %>
                                                                 <div class="post-media">
                                                                     <a href="#" title="">
-                                                                        <img src="<%- foto.url_ %>" alt="" class="img-fluid animated bounceIn">
+                                                                        <img src="<%- foto.url %>" alt="" class="img-fluid animated bounceIn">
                                                                     </a>
                                                                 </div>
                                                             <% } %>
@@ -198,6 +203,8 @@
 
                                                             <!-- PRECIO Y AFILIADO-->
                                                             <h4><p> VALOR ACTUAL: Q. <%- carr.precio_base %>
+                                                            </p></h4>
+                                                            <h4><p> MINIMO REQUERIDO: Q. <%- carr.minimo_requerido %>
                                                             </p></h4>
                                                             <h5><p> AFILIADO ADJUDICADO: <%- carr.afiliado_adjudicado %>
                                                             </p></h5>

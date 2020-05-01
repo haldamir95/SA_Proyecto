@@ -13,6 +13,8 @@ npm i body-parser
 npm install express-session --save
 #para enviar body en GET y POST
 npm install request
+#para usar alert
+npm i -S alert-node
 
 
 

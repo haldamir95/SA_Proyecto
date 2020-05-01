@@ -52,19 +52,37 @@
         <!-- FACEBOOK INFORMATION -->
         <div class="col-sm-6">
             <div class="well">
-                <h1 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h1>
+                <h1 class="text-primary"><span class="fa fa-facebook"></span> Ultimo Pago de Membresia</h1>
 
                 <!-- check if the user has this token (is the user authenticated with this social account) -->
-                <% if (user.facebook.id) { %>
-                    <h3><p>
-                        <strong>id</strong>: <%= user.facebook.id %><br>
-                        <strong>name</strong>: <%= user.facebook.name %><br>
-                    </p></h3>
-                    <a href="/unlink/facebook" class="btn btn-primary">Unlink</a>
-                <% } else { %>
-                    <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
-                <% } %>
-
+                <form id="pago_frm" action="/Pago" method="POST"></form>
+                    <% if (user.pago.id) { %>
+                        <h2><p>
+                            <div class="form-group row">
+                                &emsp;<strong>id pago </strong>: &emsp;<input class="form-control" name="idUltimo" style="width: 300px; font-size: large;" type="text" value="<%= user.pago.id %>" readonly>
+                            </div>
+                            <div class="form-group row">
+                                &emsp;<strong>monto pago</strong>: &emsp;<input class="form-control" name="montoUltimo" style="width: 300px; font-size: large;" type="text" value="<%= user.pago.monto %>" readonly>
+                            </div>
+                            <div class="form-group row">
+                                &emsp;<strong>fecha pago</strong>: &emsp;<input class="form-control" name="fechaUltima" style="width: 300px; font-size: large;" type="text" value="<%= user.pago.fecha %>" readonly>
+                            </div>
+                        </p></h2>
+                    <% } %>
+                    <h2><p>
+                        <div class="form-group row">
+                            &emsp;<strong>Confirmar Codigo</strong>: &emsp;<input form="pago_frm" class="form-control" name="codigo" style="width: 300px; font-size: large;" type="text" value="" >
+                        </div>
+                        <div class="form-group row">
+                            &emsp;<strong>No. Tarjeta</strong>: &emsp;<input form="pago_frm" class="form-control" name="noTarjeta" style="width: 300px; font-size: large;" type="text" value="" >
+                        </div>
+                        <div class="form-group row">
+                            &emsp;<strong>Monto a Pagar</strong>: &emsp;<input form="pago_frm" class="form-control" name="montoNuevo" style="width: 300px; font-size: large;" type="text" value="" >
+                        </div>
+                    
+                        <button form="pago_frm" type="submit" class="btn btn-primary" style="font-size: large;">Hacer Pago</button>
+                    </p></h2>
+                </form>
             </div>
         </div>
     </div>
@@ -110,6 +128,7 @@
             </div>
         </div>
     </div>
+
 
 </div>
 </body>

@@ -9,7 +9,7 @@ CMD ["npm", "start"]
 
 
 
-//JALO A LA PRIMERA CON ANNELICE
+//JALO A LA PRIMERA 
 FROM node:10.0.0 
 COPY NODEJS/api api/
 WORKDIR /api
