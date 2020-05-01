@@ -20,6 +20,7 @@ app.use((req, res, next) => {
      req.session.sessUsr = '';
      req.session.sessCod = '';
      req.session.sessAuth = {};
+     req.session.sessVig = false;
   }
   next();
 });

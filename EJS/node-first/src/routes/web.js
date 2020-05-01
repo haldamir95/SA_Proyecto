@@ -1,32 +1,51 @@
 /* ---------------------------------      TABLA DE ROUTEO      -------------------------------------------------
 
-                    URL_OFICINA                         URL_ASEGURADORA                     URL_TOKENS
+                    URL_OFICINA                         URL_ASEGURADORA                     URL_TOKENS                          URL_ESB
 
 LOCAL               http://127.0.0.1:4000               http://127.0.0.1:4000
 
-GP2                 http://107.21.160.103:8080          http://34.214.230.10:4000           http://3.94.79.29:8000
+GP2                 http://35.188.222.224               http://34.214.230.10:4000           http://3.94.79.29:8000
 
-FISH GP4            http://35.232.205.249               http://34.70.210.93
+FISH GP4            http://35.232.205.249               http://34.70.210.93                                                     http://104.154.165.81
 
 RICARDO
 
 
+const credenciales2 = {
+        client_id: 'fish', 
+        client_secret: '201314646',
+        grant_type: 'client_credentials',
+        audience: 12
+    }
+
+
+    const credenciales = {
+    client_id: 'giovannilopez', 
+    client_secret: 'miacceso123',
+    grant_type: 'client_credentials',
+    audience: 12
+}
+
 
 */
-
 
 
 const express = require('express');
 const request = require('request');
 const router = express.Router();
 const fetchQuery = require('../request-manager');
-const URL_OFICINA = 'http://107.21.160.103:8080'                 
+const URL_OFICINA = 'http://104.154.165.81'                 
+const URL_ASEGURADORA = 'http://104.154.165.81'         
+const URL_TOKEN = 'http://104.154.165.81'
+/*const URL_OFICINA = 'http://35.188.222.224'                 
 const URL_ASEGURADORA = 'http://34.214.230.10:4000'         
-const URL_TOKEN = 'http://3.94.79.29:8000'
+const URL_TOKEN = 'http://3.94.79.29:8000'*/
 const app = express();
+const alert = require('alert-node')
+
 const credenciales = {
-    client_id: 'giovannilopez', 
-    client_secret: 'miacceso123',
+    client_id: 'fish', 
+    client_secret: '201314646',
     grant_type: 'client_credentials',
     audience: 12
 }
@@ -45,7 +64,7 @@ router.get('/', async (req,res) => {
      .catch(function(err){
          console.log(err.status, err.statusText)
      });//, album:fotos.response
-
+     
 
      //Obteniendo Token de Vehiculos
     var token2 = await fetchQuery(URL_TOKEN+'/oauth/token/','POST', credenciales).then()
@@ -53,11 +72,10 @@ router.get('/', async (req,res) => {
         console.log(err.status, err.statusText)
     });
 
-
+  
      //Obteniendo Todos los vehiculos
      fetchQuery(URL_ASEGURADORA+'/Vehiculo?jwt='+token2.token, 'GET').then(res_be => {
          if (res_be!=null) {
-             //console.log("VEHICULOS -> ",res_be,"\n")
              res.render('./tech-blog/subasta.html',{ title: 'Subasta Online', carros:res_be.response, usr:req.session.sessUsr, album:fotos.response});
          } else {
              console.log('res_back_end not soccess')
@@ -107,6 +125,7 @@ router.get('/logout', async (req,res) => {
     //Terminando Sesion
     req.session.sessUsr='';
     req.session.sessCod='';
+    req.session.sessVig=false;
     req.session.sessAuth={};
 
 
@@ -171,42 +190,64 @@ router.post('/Afiliadopost', async (req,res) => {
         console.log(err.status, err.statusText)
         res.render('login.html',{ title: 'Subasta Online', message: err.status + ' ' + err.statusText + ' ' + err.message});
     });
-    //console.log("USUARIO CREADO", usuario)
+    console.log("USUARIO CREADO", usuario)
 
 
     //Validacion de respuestas
     if(usuario!=null){
-        if(usuario.vigente==true || usuario.vigente.toString().toLowerCase() =="true"){
-            req.session.sessUsr = usuario.nombre
-            req.session.sessCod = usuario.codigo
-            req.session.sessAuth = {
-                local: {
-                    codigo: usuario.codigo,
-                    nombre: usuario.nombre,
-                    vigente: usuario.vigente
-                },
-                facebook: {
-                    id: usuario.codigo,
-                    name: usuario.nombre
-                },
-                twitter: {
-                    id: usuario.codigo,
-                    display_name: usuario.nombre,
-                    username: '@'+usuario.nombre
-                },
-                google: {
-                    id: usuario.codigo,
-                    email: usuario.nombre+'@gmail.com',
-                    name: usuario.nombre
-                }
-            }
-            
 
-            //Enviando a subasta
-            res.render('perfil.html',{ title: 'Subasta Online', nombre: req.session.sessAuth.local.nombre, user: req.session.sessAuth, message: ''});
-        }else{
-            res.render('login.html',{ title: 'Subasta Online', message: 'Su usuario NO esta vigente'});
+
+        //Obteniendo Token de Pago
+        var tokenPago = await fetchQuery(URL_TOKEN+'/oauth/token/','POST', credenciales).then()
+        .catch(function(err){
+            console.log(err.status, err.statusText)
+        });
+
+
+        //Obteniendo pagos
+        var pagos = await fetchQuery(URL_OFICINA+'/Pago?jwt='+tokenPago.token+'&codigo='+usuario.codigo,'GET').then().catch(function(err){
+            console.log("Pagos ",err.status, err.statusText)
+        });
+
+
+        var idpago ='';
+        var montopago='';
+        var fechapago='';
+        if(pagos!=null){
+            idpago = pagos.id;
+            montopago = pagos.monto;
+            fechapago = pagos.fecha;
         }
+
+        req.session.sessUsr = usuario.nombre;
+        req.session.sessCod = usuario.codigo;
+        req.session.sessVig = usuario.vigente;
+        req.session.sessAuth = {
+            local: {
+                codigo: usuario.codigo,
+                nombre: usuario.nombre,
+                vigente: usuario.vigente
+            },
+            pago: {
+                id: idpago,
+                monto: montopago,
+                fecha: fechapago
+            },
+            twitter: {
+                id: usuario.codigo,
+                display_name: usuario.nombre,
+                username: '@'+usuario.nombre
+            },
+            google: {
+                id: usuario.codigo,
+                email: usuario.nombre+'@gmail.com',
+                name: usuario.nombre
+            }
+        }
+        
+
+        //Enviando a subasta
+        res.render('perfil.html',{ title: 'Subasta Online', nombre: req.session.sessAuth.local.nombre, user: req.session.sessAuth, message: ''});
     }
 });
 
@@ -238,40 +279,61 @@ router.post('/Afiliadoput', async (req,res) => {
         res.render('perfil.html',{ title: 'Subasta Online', nombre: req.session.sessAuth.local.nombre, user: req.session.sessAuth, message: err.status + ' ' + err.statusText});
     });
 
-    console.log("ACTUALIZAR ", usuario)
     //Validacion de respuestas
     if(usuario!=null){
-        if(usuario.vigente==true || usuario.vigente.toString().toLowerCase() =="true"){
-            req.session.sessUsr = usuario.nombre
-            req.session.sessCod = usuario.codigo
-            req.session.sessAuth = {
-                local: {
-                    codigo: usuario.codigo,
-                    nombre: usuario.nombre,
-                    vigente: usuario.vigente
-                },
-                facebook: {
-                    id: usuario.codigo,
-                    name: usuario.nombre
-                },
-                twitter: {   
-                    id: usuario.codigo,
-                    display_name: usuario.nombre,
-                    username: '@'+usuario.nombre
-                },
-                google: {
-                    id: usuario.codigo,
-                    email: usuario.nombre+'@gmail.com',
-                    name: usuario.nombre
-                }
-            }
-            
+        //Obteniendo Token de Pago
+        var tokenPago = await fetchQuery(URL_TOKEN+'/oauth/token/','POST', credenciales).then()
+        .catch(function(err){
+            console.log(err.status, err.statusText)
+        });
 
-            //Enviando a subasta
-            res.render('perfil.html',{ title: 'Subasta Online', nombre: req.session.sessAuth.local.nombre, user: req.session.sessAuth, message:"Modificacion Exitosa"});
-        }else{
-            res.render('login.html',{ title: 'Subasta Online', message: 'Su usuario NO esta vigente'});
+
+        //Obteniendo pagos
+        var pagos = await fetchQuery(URL_OFICINA+'/Pago?jwt='+tokenPago.token+'&codigo='+usuario.codigo,'GET').then()
+        .catch(function(err){
+            console.log("Pagos ",err.status, err.statusText)
+        });
+
+
+        var idpago ='';
+        var montopago='';
+        var fechapago='';
+        if(pagos!=null){
+            idpago = pagos.id;
+            montopago = pagos.monto;
+            fechapago = pagos.fecha;
         }
+
+        req.session.sessUsr = usuario.nombre
+        req.session.sessCod = usuario.codigo
+        req.session.sessVig = usuario.vigente;
+        req.session.sessAuth = {
+            local: {
+                codigo: usuario.codigo,
+                nombre: usuario.nombre,
+                vigente: usuario.vigente
+            },
+            pago: {
+                id: idpago,
+                monto: montopago,
+                fecha: fechapago
+            },
+            twitter: {   
+                id: usuario.codigo,
+                display_name: usuario.nombre,
+                username: '@'+usuario.nombre
+            },
+            google: {
+                id: usuario.codigo,
+                email: usuario.nombre+'@gmail.com',
+                name: usuario.nombre
+            }
+        }
+        
+
+        //Enviando a subasta
+        res.render('perfil.html',{ title: 'Subasta Online', nombre: req.session.sessAuth.local.nombre, user: req.session.sessAuth, message:"Modificacion Exitosa"});
+    
     }
 });
 
@@ -285,6 +347,7 @@ router.get('/Afiliado', async (req,res) => {
     //Terminando Sesion
     req.session.sessUsr='';
     req.session.sessCod='';
+    req.session.sessVig=false;
     req.session.sessAuth={};
 
 
@@ -331,37 +394,61 @@ router.get('/Afiliado', async (req,res) => {
         console.log(err.status, err.statusText)
     });//, album:fotos.response
 
+
+    //Obteniendo Token de Pago
+    var tokenPago = await fetchQuery(URL_TOKEN+'/oauth/token/','POST', credenciales).then()
+    .catch(function(err){
+        console.log(err.status, err.statusText)
+    });
+
+
+    //Obteniendo pagos
+    var pagos = await fetchQuery(URL_OFICINA+'/Pago?jwt='+tokenPago.token+'&codigo='+usuario.codigo,'GET').then()
+    .catch(function(err){
+        console.log("Pagos ",err.status, err.statusText)
+    });
+
+
     //Validacion de respuestas
     if(usuario!=null){
-        if(usuario.vigente==true || usuario.vigente.toString().toLowerCase() =="true"){
-            req.session.sessUsr = usuario.nombre
-            req.session.sessCod = usuario.codigo
-            req.session.sessAuth = {
-                local: {
-                    codigo: usuario.codigo,
-                    nombre: usuario.nombre,
-                    vigente: usuario.vigente
-                },
-                facebook: {
-                    id: usuario.codigo,
-                    name: usuario.nombre
-                },
-                twitter: {
-                    id: usuario.codigo,
-                    display_name: usuario.nombre,
-                    username: '@'+usuario.nombre
-                },
-                google: {
-                    id: usuario.codigo,
-                    email: usuario.nombre+'@gmail.com',
-                    name: usuario.nombre
-                }
-            }
-            //console.log(fotos)
-            res.render('./tech-blog/subasta.html',{ title: 'Subasta Online', carros:vehiculos.response, usr:req.session.sessUsr, album:fotos.response});
-        }else{
-        res.render('login.html',{ title: 'Subasta Online', message: 'Su usuario NO esta vigente'});
+        var idpago ='';
+        var montopago='';
+        var fechapago='';
+        if(pagos!=null){
+            idpago = pagos.id;
+            montopago = pagos.monto;
+            fechapago = pagos.fecha;
         }
+
+        req.session.sessUsr = usuario.nombre;
+        req.session.sessCod = usuario.codigo;
+        req.session.sessVig = usuario.vigente;
+        req.session.sessAuth = {
+            local: {
+                codigo: usuario.codigo,
+                nombre: usuario.nombre,
+                vigente: usuario.vigente
+            },
+            pago: {
+                id: idpago,
+                monto: montopago,
+                fecha: fechapago
+            },
+            twitter: {
+                id: usuario.codigo,
+                display_name: usuario.nombre,
+                username: '@'+usuario.nombre
+            },
+            google: {
+                id: usuario.codigo,
+                email: usuario.nombre+'@gmail.com',
+                name: usuario.nombre
+            }
+        }
+        res.render('./tech-blog/subasta.html',{ title: 'Subasta Online', carros:vehiculos.response, usr:req.session.sessUsr, album:fotos.response});
+        // }else{
+        // res.render('login.html',{ title: 'Subasta Online', message: 'Su usuario NO esta vigente'});
+        // }
     }
 });
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -373,8 +460,7 @@ router.get('/Afiliado', async (req,res) => {
 //------------------------------------------------------------------ HACER PUJA
 router.post('/Vehiculoput', async (req,res) => {
     //VALIDAR SI ESTA VIGENTE YLOGEADO
-    var vig = req.session.sessAuth.local.vigente;
-    if(vig==true || vig.toString().toLowerCase() =="true"){
+    if(req.session.sessVig==true || req.session.sessVig.toString().toLowerCase() =="true"){
         //Obteniendo Token 3 de Fotos
         var token3 = await fetchQuery(URL_TOKEN+'/oauth/token/','POST', credenciales).then()
         .catch(function(err){
@@ -443,6 +529,44 @@ router.post('/Vehiculoput', async (req,res) => {
     
 
 
+
+
+//--------------------------------------------------------------- HACER PAGO
+router.post('/Pago', async (req,res) => {
+    console.log("ENTRO PAGO")
+    //Obteniendo Token de Pago
+    var tokenPago = await fetchQuery(URL_TOKEN+'/oauth/token/','POST', credenciales).then()
+    .catch(function(err){
+        console.log(err.status, err.statusText)
+    });
+
+
+    //Data para pago
+    var data = {
+        jwt: tokenPago.token,
+        codigo:  Number(req.body.codigo),
+        monto:  Number(req.body.montoNuevo)
+    }
+
+    //Obteniendo pagos
+    var pagos = await fetchQuery(URL_OFICINA+'/Pago','POST', data).then()
+    .catch(function(err){
+        console.log("error", err.status, err.statusText)
+        alert("ERROR: " + err.status + " " + err.statusText)
+        res.render('perfil.html',{ title: 'Subasta Online', nombre: req.session.sessAuth.local.nombre, user: req.session.sessAuth, message: "ERROR: " + err.status + " " + err.statusText});
+    });
+
+    if(pagos!=null){
+        req.session.sessVig = true;
+        req.session.sessAuth.pago.id = pagos.id;
+        req.session.sessAuth.pago.monto = pagos.monto;
+        req.session.sessAuth.pago.fecha = pagos.fecha;
+        req.session.sessAuth.local.vigente = true;
+        res.render('perfil.html',{ title: 'Subasta Online', nombre: req.session.sessAuth.local.nombre, user: req.session.sessAuth, message: ''});
+        
+    }
+})
+//-----------------------------------------------------------------------------------------------------------------------------------
 
 
 
