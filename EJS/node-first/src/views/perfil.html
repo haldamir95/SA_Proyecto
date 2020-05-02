@@ -69,19 +69,21 @@
                             </div>
                         </p></h2>
                     <% } %>
-                    <h2><p>
-                        <div class="form-group row">
-                            &emsp;<strong>Confirmar Codigo</strong>: &emsp;<input form="pago_frm" class="form-control" name="codigo" style="width: 300px; font-size: large;" type="text" value="" >
-                        </div>
-                        <div class="form-group row">
-                            &emsp;<strong>No. Tarjeta</strong>: &emsp;<input form="pago_frm" class="form-control" name="noTarjeta" style="width: 300px; font-size: large;" type="text" value="" >
-                        </div>
-                        <div class="form-group row">
-                            &emsp;<strong>Monto a Pagar</strong>: &emsp;<input form="pago_frm" class="form-control" name="montoNuevo" style="width: 300px; font-size: large;" type="text" value="" >
-                        </div>
-                    
-                        <button form="pago_frm" type="submit" class="btn btn-primary" style="font-size: large;">Hacer Pago</button>
-                    </p></h2>
+                    <% if (user.local.vigente == false || user.local.vigente=="false") { %>
+                        <h2><p>
+                            <div class="form-group row">
+                                &emsp;<strong>Confirmar Codigo</strong>: &emsp;<input form="pago_frm" class="form-control" name="codigo" style="width: 300px; font-size: large;" type="text" value="" >
+                            </div>
+                            <div class="form-group row">
+                                &emsp;<strong>No. Tarjeta</strong>: &emsp;<input form="pago_frm" class="form-control" name="noTarjeta" style="width: 300px; font-size: large;" type="text" value="" >
+                            </div>
+                            <div class="form-group row">
+                                &emsp;<strong>Monto a Pagar</strong>: &emsp;<input form="pago_frm" class="form-control" name="montoNuevo" style="width: 300px; font-size: large;" type="text" value="" >
+                            </div>
+                        
+                            <button form="pago_frm" type="submit" class="btn btn-primary" style="font-size: large;">Hacer Pago</button>
+                        </p></h2>
+                    <% } %>
                 </form>
             </div>
         </div>
